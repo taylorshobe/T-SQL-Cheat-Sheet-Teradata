@@ -64,3 +64,31 @@ FROM (
   FROM table) t
 
 
+-- Append speaker id's
+SELECT concat_ws(',', 
+                case when lead(person_id) over (order by pos) <> person_id or lead(person_id) over (order by pos) is null then cast(person_id as string) 
+                     else '' 
+                end, 
+                words) as combined
+FROM (
+  SELECT words, person_id, row_number() over (order by 1) - 1 as pos
+  FROM table
+) t
+
+
+
+ -- Create new array | Speaker breaks
+WITH cte AS (
+  SELECT person_id, row_number() over (order by 1) - 1 as pos
+  FROM table
+)
+SELECT collect_list(pos + 1)
+FROM (
+  SELECT pos, lag(person_id) over (order by pos) as prev_person_id
+  FROM cte
+) t
+WHERE person_id <> prev_person_id OR prev_person_id is null
+GROUP BY person_id;
+
+
+
