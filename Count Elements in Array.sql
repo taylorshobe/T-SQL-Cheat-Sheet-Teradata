@@ -1,3 +1,6 @@
+
+Teradata
+---------------------------------------------------
 CREATE FUNCTION CountArrayElements (@Array VARCHAR(8000))
 RETURNS INTEGER
 BEGIN
@@ -19,3 +22,12 @@ END
 
 SELECT dbo.CountArrayElements('element1,element2,element3')
 
+SELECT dbo.CountArrayElements(column_name)
+FROM database.table
+
+
+--------------------------------------------
+HiveQL
+
+SELECT size(split(column_name, ','))
+FROM table
